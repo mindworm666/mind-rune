@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Rune - Minimalist MMO Roguelike</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <pre class="ascii-logo">
+ __  __ _           _   ____                  
+|  \/  (_)_ __   __| | |  _ \ _   _ _ __   ___ 
+| |\/| | | '_ \ / _` | | |_) | | | | '_ \ / _ \
+| |  | | | | | | (_| | |  _ <| |_| | | | |  __/
+|_|  |_|_|_| |_|\__,_| |_| \_\\__,_|_| |_|\___|
+                                                
+        A Minimalist Multiplayer Roguelike
+                </pre>
+                
+                <div class="login-form">
+                    <h2 id="form-title">Login</h2>
+                    <input type="text" id="username" placeholder="Username" maxlength="20" autocomplete="username">
+                    <input type="password" id="password" placeholder="Password" maxlength="50" autocomplete="current-password">
+                    <button id="login-btn" class="btn primary">Login</button>
+                    <button id="register-btn" class="btn secondary">Register</button>
+                    <div id="login-error" class="error hidden"></div>
+                </div>
+                
+                <div class="info-text">
+                    <p>Controls: Arrow keys or WASD to move</p>
+                    <p>Press T to chat, ESC to close chat</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-container">
+                <!-- Header -->
+                <div class="game-header">
+                    <div class="player-info">
+                        <span id="player-name">Player</span> | 
+                        <span id="player-level">Lvl 1</span> | 
+                        <span id="player-health">HP: 100/100</span> | 
+                        <span id="player-position">X:0 Y:0</span>
+                    </div>
+                    <div class="server-info">
+                        <span id="players-online">👥 0 online</span> | 
+                        <span id="connection-status">🔴 Connecting...</span>
+                    </div>
+                </div>
+
+                <!-- Main Game View -->
+                <div class="game-main">
+                    <div class="game-view">
+                        <pre id="game-canvas" class="canvas"></pre>
+                    </div>
+                    
+                    <!-- Sidebar -->
+                    <div class="game-sidebar">
+                        <div class="sidebar-section">
+                            <h3>Nearby Players</h3>
+                            <div id="nearby-players" class="player-list">
+                                <p class="empty-text">No other players nearby</p>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-section">
+                            <h3>Game Log</h3>
+                            <div id="game-log" class="log-container">
+                                <p class="log-entry">Welcome to Mind Rune!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat -->
+                <div id="chat-container" class="chat-container hidden">
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Type message... (ESC to close)" maxlength="200">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
