@@ -1,0 +1,653 @@
+/**
+ * Mind Rune - CRT Effects
+ * 
+ * Heavy vintage CRT terminal aesthetics:
+ * - Scanlines
+ * - Phosphor glow
+ * - Screen curvature
+ * - Chromatic aberration
+ * - Vignette
+ * - Flicker
+ * - Bloom
+ * - Noise/static
+ * 
+ * Can be toggled via [data-crt="true"] on body element
+ */
+
+/* ============================================================================
+   CRT EFFECT VARIABLES
+   ============================================================================ */
+
+:root {
+  --crt-scanline-opacity: 0.15;
+  --crt-scanline-height: 2px;
+  --crt-flicker-amount: 0.02;
+  --crt-curve-amount: 0.03;
+  --crt-aberration: 1px;
+  --crt-vignette-size: 0.8;
+  --crt-vignette-intensity: 0.6;
+  --crt-noise-opacity: 0.05;
+  --crt-glow-size: 2px;
+  --crt-bloom-intensity: 0.4;
+}
+
+/* Quality presets */
+[data-crt-quality="low"] {
+  --crt-scanline-opacity: 0.1;
+  --crt-flicker-amount: 0;
+  --crt-aberration: 0;
+  --crt-noise-opacity: 0.02;
+}
+
+[data-crt-quality="high"] {
+  --crt-scanline-opacity: 0.2;
+  --crt-flicker-amount: 0.03;
+  --crt-aberration: 2px;
+  --crt-noise-opacity: 0.08;
+}
+
+/* ============================================================================
+   MAIN CRT CONTAINER
+   ============================================================================ */
+
+[data-crt="true"] #app {
+  position: relative;
+  overflow: hidden;
+}
+
+/* CRT Screen Effect Container */
+[data-crt="true"] #app::before,
+[data-crt="true"] #app::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+}
+
+/* ============================================================================
+   SCANLINES
+   ============================================================================ */
+
+[data-crt="true"] #app::before {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) calc(var(--crt-scanline-height) - 1px),
+    rgba(0, 0, 0, var(--crt-scanline-opacity)) calc(var(--crt-scanline-height) - 1px),
+    rgba(0, 0, 0, var(--crt-scanline-opacity)) var(--crt-scanline-height)
+  );
+  animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(var(--crt-scanline-height)); }
+}
+
+/* Alternate scanline pattern (interlaced) */
+[data-crt-scanlines="interlaced"] #app::before {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, var(--crt-scanline-opacity)) 1px,
+    rgba(0, 0, 0, 0) 2px
+  );
+  animation: none;
+}
+
+/* ============================================================================
+   VIGNETTE
+   ============================================================================ */
+
+[data-crt="true"] #app::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent calc(var(--crt-vignette-size) * 50%),
+    rgba(0, 0, 0, var(--crt-vignette-intensity)) 100%
+  );
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================================
+   SCREEN CURVATURE
+   ============================================================================ */
+
+[data-crt="true"] #app {
+  /* Subtle barrel distortion - requires modern browser */
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+[data-crt="true"] .main-content {
+  transform: 
+    perspective(1000px)
+    rotateX(0deg)
+    scale(1.0);
+}
+
+/* Stronger curvature option */
+[data-crt-curve="strong"] .main-content {
+  transform: 
+    perspective(800px)
+    rotateX(0deg)
+    scale(1.02);
+}
+
+/* ============================================================================
+   PHOSPHOR GLOW
+   ============================================================================ */
+
+[data-crt="true"] {
+  --text-glow: 
+    0 0 calc(var(--crt-glow-size) * 1) currentColor,
+    0 0 calc(var(--crt-glow-size) * 2) currentColor,
+    0 0 calc(var(--crt-glow-size) * 3) currentColor;
+}
+
+[data-crt="true"] body {
+  text-shadow: var(--text-glow);
+}
+
+/* Enhance glow on bright elements */
+[data-crt="true"] h1,
+[data-crt="true"] h2,
+[data-crt="true"] h3,
+[data-crt="true"] .highlight,
+[data-crt="true"] .title {
+  text-shadow: 
+    0 0 calc(var(--crt-glow-size) * 2) currentColor,
+    0 0 calc(var(--crt-glow-size) * 4) currentColor,
+    0 0 calc(var(--crt-glow-size) * 6) currentColor,
+    0 0 calc(var(--crt-glow-size) * 8) currentColor;
+}
+
+/* Phosphor trail effect on text */
+[data-crt="true"] .phosphor-trail {
+  position: relative;
+}
+
+[data-crt="true"] .phosphor-trail::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0.3;
+  text-shadow: 
+    2px 0 calc(var(--crt-glow-size) * 2) currentColor,
+    4px 0 calc(var(--crt-glow-size) * 3) currentColor;
+  animation: phosphor-fade 0.5s ease-out;
+}
+
+@keyframes phosphor-fade {
+  from { opacity: 0.5; }
+  to { opacity: 0; }
+}
+
+/* ============================================================================
+   CHROMATIC ABERRATION
+   ============================================================================ */
+
+[data-crt="true"] .crt-aberration {
+  position: relative;
+}
+
+[data-crt="true"] .crt-aberration::before,
+[data-crt="true"] .crt-aberration::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+[data-crt="true"] .crt-aberration::before {
+  color: #ff0000;
+  transform: translateX(calc(-1 * var(--crt-aberration)));
+}
+
+[data-crt="true"] .crt-aberration::after {
+  color: #00ffff;
+  transform: translateX(var(--crt-aberration));
+}
+
+/* Apply to canvas */
+[data-crt="true"] canvas {
+  filter: 
+    contrast(1.1)
+    brightness(1.05);
+}
+
+[data-crt-aberration="strong"] canvas {
+  filter: 
+    contrast(1.1)
+    brightness(1.05)
+    drop-shadow(calc(-1 * var(--crt-aberration)) 0 0 rgba(255, 0, 0, 0.5))
+    drop-shadow(var(--crt-aberration) 0 0 rgba(0, 255, 255, 0.5));
+}
+
+/* ============================================================================
+   SCREEN FLICKER
+   ============================================================================ */
+
+[data-crt="true"] #app {
+  animation: crt-flicker 0.15s infinite;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 1; }
+  50% { opacity: calc(1 - var(--crt-flicker-amount)); }
+  100% { opacity: 1; }
+}
+
+/* Random flicker (more realistic) */
+[data-crt-flicker="random"] #app {
+  animation: crt-flicker-random 8s infinite;
+}
+
+@keyframes crt-flicker-random {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.98; }
+  11% { opacity: 1; }
+  25% { opacity: 0.97; }
+  25.1% { opacity: 1; }
+  50% { opacity: 0.99; }
+  51% { opacity: 0.96; }
+  51.5% { opacity: 1; }
+  75% { opacity: 0.98; }
+  76% { opacity: 1; }
+}
+
+/* Power-on flicker */
+@keyframes crt-power-on {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.001);
+  }
+  10% {
+    opacity: 0.5;
+    transform: scaleY(0.5);
+  }
+  20% {
+    opacity: 0;
+    transform: scaleY(0.001);
+  }
+  30% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  40% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+[data-crt="true"].power-on #app {
+  animation: crt-power-on 1.5s ease-out;
+}
+
+/* ============================================================================
+   BLOOM / GLOW EFFECT
+   ============================================================================ */
+
+[data-crt="true"] .bloom {
+  position: relative;
+  filter: brightness(1.2);
+}
+
+[data-crt="true"] .bloom::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: inherit;
+  filter: blur(calc(var(--crt-glow-size) * 3));
+  opacity: var(--crt-bloom-intensity);
+  z-index: -1;
+  mix-blend-mode: screen;
+}
+
+/* Apply bloom to bright UI elements */
+[data-crt="true"] .progress-bar-fill,
+[data-crt="true"] .highlight,
+[data-crt="true"] button:hover {
+  filter: brightness(1.2) blur(0.3px);
+}
+
+/* ============================================================================
+   STATIC / NOISE
+   ============================================================================ */
+
+[data-crt="true"] #crt-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: var(--z-overlay);
+  opacity: var(--crt-noise-opacity);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="100%" height="100%" filter="url(%23noise)" /></svg>');
+  animation: crt-noise 0.2s steps(8) infinite;
+}
+
+@keyframes crt-noise {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 10%); }
+  90% { transform: translate(-10%, 10%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* TV static between channels (optional effect) */
+@keyframes tv-static {
+  0% { 
+    background-position: 0% 0%;
+    opacity: 0.1;
+  }
+  100% { 
+    background-position: 100% 100%;
+    opacity: 0.05;
+  }
+}
+
+/* ============================================================================
+   SCREEN BURN-IN EFFECT
+   ============================================================================ */
+
+[data-crt="true"] .burn-in {
+  position: relative;
+}
+
+[data-crt="true"] .burn-in::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0.03;
+  text-shadow: none;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   REFRESH RATE SIMULATION
+   ============================================================================ */
+
+/* Simulate 60Hz refresh */
+[data-crt-refresh="60hz"] #app {
+  animation: crt-refresh-60hz 16.67ms infinite;
+}
+
+@keyframes crt-refresh-60hz {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(0.5px); }
+  100% { transform: translateY(0); }
+}
+
+/* ============================================================================
+   COLOR FRINGING
+   ============================================================================ */
+
+[data-crt="true"] .color-fringe {
+  position: relative;
+}
+
+[data-crt="true"] .color-fringe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.03) 0%,
+      transparent 33%,
+      transparent 66%,
+      rgba(0, 0, 255, 0.03) 100%
+    );
+  pointer-events: none;
+}
+
+/* ============================================================================
+   OVERSCAN / BORDER
+   ============================================================================ */
+
+[data-crt="true"] #app {
+  /* Simulate CRT overscan by adding border */
+  border: 2vw solid var(--background);
+  box-sizing: border-box;
+}
+
+/* Rounded corners like old TVs */
+[data-crt-border="rounded"] #app {
+  border-radius: 3vw;
+}
+
+/* ============================================================================
+   REFLECTION
+   ============================================================================ */
+
+[data-crt="true"] #app {
+  position: relative;
+}
+
+[data-crt="true"] #app::after {
+  /* Subtle screen reflection */
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+}
+
+/* ============================================================================
+   PERFORMANCE TOGGLES
+   ============================================================================ */
+
+/* Disable expensive effects for low-end devices */
+@media (prefers-reduced-motion: reduce) {
+  [data-crt="true"] #app {
+    animation: none !important;
+  }
+  
+  [data-crt="true"] #app::before {
+    animation: none !important;
+  }
+  
+  [data-crt="true"] #crt-noise {
+    animation: none !important;
+    opacity: calc(var(--crt-noise-opacity) * 0.5);
+  }
+}
+
+/* Disable effects on mobile */
+@media (max-width: 768px) {
+  [data-crt="true"] {
+    --crt-scanline-opacity: 0.08;
+    --crt-flicker-amount: 0;
+    --crt-aberration: 0;
+    --crt-noise-opacity: 0.02;
+  }
+  
+  [data-crt="true"] #app::before {
+    animation: none;
+  }
+  
+  [data-crt="true"] #crt-noise {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   CRT EFFECT TOGGLE BUTTON
+   ============================================================================ */
+
+.crt-toggle {
+  position: fixed;
+  bottom: var(--padding-medium);
+  right: var(--padding-medium);
+  z-index: var(--z-overlay);
+  padding: var(--padding-small);
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  transition: all var(--transition-speed);
+}
+
+.crt-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+[data-crt="true"] .crt-toggle {
+  color: var(--text-primary);
+  box-shadow: 0 0 var(--glow-radius) var(--phosphor-green-glow);
+}
+
+/* ============================================================================
+   ADDITIONAL ATMOSPHERIC EFFECTS
+   ============================================================================ */
+
+/* Dust particles on screen */
+[data-crt="true"] .crt-dust {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-dust 10s infinite linear;
+}
+
+@keyframes float-dust {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(100px, 100vh);
+    opacity: 0;
+  }
+}
+
+/* Horizontal interference lines */
+[data-crt-interference="true"] #app {
+  position: relative;
+}
+
+[data-crt-interference="true"] #app::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  animation: interference 7s linear infinite;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+}
+
+@keyframes interference {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   BOOT SEQUENCE EFFECT
+   ============================================================================ */
+
+@keyframes crt-boot {
+  0% {
+    clip-path: inset(50% 0 50% 0);
+    filter: brightness(3);
+  }
+  10% {
+    clip-path: inset(30% 0 30% 0);
+  }
+  50% {
+    clip-path: inset(0 0 0 0);
+    filter: brightness(1.5);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    filter: brightness(1);
+  }
+}
+
+[data-crt="true"].booting #app {
+  animation: crt-boot 2s ease-out;
+}
+
+/* ============================================================================
+   UTILITY CLASSES FOR CRT EFFECTS
+   ============================================================================ */
+
+.no-crt-effects {
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+.enhanced-glow {
+  text-shadow: 
+    0 0 calc(var(--crt-glow-size) * 3) currentColor,
+    0 0 calc(var(--crt-glow-size) * 6) currentColor,
+    0 0 calc(var(--crt-glow-size) * 9) currentColor !important;
+}
+
+.crt-scanline-effect {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
+  );
+}

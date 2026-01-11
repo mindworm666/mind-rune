@@ -1,94 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Rune - Minimalist MMO Roguelike</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mind Rune - Minimalist MMO Roguelike</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/terminal.css">
+  <link rel="stylesheet" href="css/crt-effects.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>@</text></svg>">
+  
+  <!-- Preload font -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div id="app">
-        <!-- Login Screen -->
-        <div id="login-screen" class="screen active">
-            <div class="login-container">
-                <pre class="ascii-logo">
- __  __ _           _   ____                  
-|  \/  (_)_ __   __| | |  _ \ _   _ _ __   ___ 
-| |\/| | | '_ \ / _` | | |_) | | | | '_ \ / _ \
-| |  | | | | | | (_| | |  _ <| |_| | | | |  __/
-|_|  |_|_|_| |_|\__,_| |_| \_\\__,_|_| |_|\___|
-                                                
-        A Minimalist Multiplayer Roguelike
-                </pre>
-                
-                <div class="login-form">
-                    <h2 id="form-title">Login</h2>
-                    <input type="text" id="username" placeholder="Username" maxlength="20" autocomplete="username">
-                    <input type="password" id="password" placeholder="Password" maxlength="50" autocomplete="current-password">
-                    <button id="login-btn" class="btn primary">Login</button>
-                    <button id="register-btn" class="btn secondary">Register</button>
-                    <div id="login-error" class="error hidden"></div>
-                </div>
-                
-                <div class="info-text">
-                    <p>Controls: Arrow keys or WASD to move</p>
-                    <p>Press T to chat, ESC to close chat</p>
-                </div>
-            </div>
-        </div>
+<body data-crt="true" data-theme="green">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="title">MIND RUNE</div>
+    <div class="loading-spinner">|</div>
+    <div class="muted">Initializing...</div>
+  </div>
 
-        <!-- Game Screen -->
-        <div id="game-screen" class="screen">
-            <div class="game-container">
-                <!-- Header -->
-                <div class="game-header">
-                    <div class="player-info">
-                        <span id="player-name">Player</span> | 
-                        <span id="player-level">Lvl 1</span> | 
-                        <span id="player-health">HP: 100/100</span> | 
-                        <span id="player-position">X:0 Y:0</span>
-                    </div>
-                    <div class="server-info">
-                        <span id="players-online">👥 0 online</span> | 
-                        <span id="connection-status">🔴 Connecting...</span>
-                    </div>
-                </div>
-
-                <!-- Main Game View -->
-                <div class="game-main">
-                    <div class="game-view">
-                        <pre id="game-canvas" class="canvas"></pre>
-                    </div>
-                    
-                    <!-- Sidebar -->
-                    <div class="game-sidebar">
-                        <div class="sidebar-section">
-                            <h3>Nearby Players</h3>
-                            <div id="nearby-players" class="player-list">
-                                <p class="empty-text">No other players nearby</p>
-                            </div>
-                        </div>
-                        
-                        <div class="sidebar-section">
-                            <h3>Game Log</h3>
-                            <div id="game-log" class="log-container">
-                                <p class="log-entry">Welcome to Mind Rune!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chat -->
-                <div id="chat-container" class="chat-container hidden">
-                    <div class="chat-messages" id="chat-messages"></div>
-                    <div class="chat-input-container">
-                        <input type="text" id="chat-input" placeholder="Type message... (ESC to close)" maxlength="200">
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Main Application -->
+  <div id="app">
+    <!-- Header Bar -->
+    <div class="header-bar">
+      <div class="header-left">
+        <span class="title">MIND RUNE</span>
+        <span class="muted">v0.1.0</span>
+      </div>
+      <div class="header-right">
+        <div id="status-panel"></div>
+      </div>
     </div>
 
-    <script src="js/game.js"></script>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Game Viewport -->
+      <div class="viewport-container">
+        <canvas id="game-canvas"></canvas>
+      </div>
+
+      <!-- Side Panel -->
+      <div class="side-panel">
+        <!-- Minimap -->
+        <div id="minimap-container"></div>
+        
+        <!-- Inventory (hidden by default) -->
+        <div id="inventory-panel" class="hidden"></div>
+      </div>
+    </div>
+
+    <!-- Message Log -->
+    <div class="message-log-container">
+      <div id="message-log"></div>
+    </div>
+
+    <!-- Status Line -->
+    <div class="status-line">
+      <div class="status-left">
+        <span class="muted">[T] Chat</span>
+        <span class="muted">[I] Inventory</span>
+        <span class="muted">[C] Character</span>
+        <span class="muted">[H] Help</span>
+      </div>
+      <div class="status-right" id="debug-info">
+        <span id="fps-counter">FPS: --</span>
+        <span id="latency-counter">Latency: --ms</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input (hidden by default) -->
+  <div id="chat-container" class="hidden"></div>
+
+  <!-- Character Sheet Overlay (hidden by default) -->
+  <div id="character-sheet-overlay" class="hidden"></div>
+
+  <!-- CRT Noise Layer -->
+  <div id="crt-noise"></div>
+
+  <!-- CRT Toggle Button -->
+  <button class="crt-toggle" id="crt-toggle" title="Toggle CRT Effects">
+    CRT: ON
+  </button>
+
+  <!-- Scripts (ES6 Modules) -->
+  <script type="module" src="js/main.js"></script>
+  
+  <!-- CRT Toggle Script -->
+  <script>
+    document.getElementById('crt-toggle')?.addEventListener('click', () => {
+      const body = document.body;
+      const currentCRT = body.getAttribute('data-crt') === 'true';
+      body.setAttribute('data-crt', currentCRT ? 'false' : 'true');
+      document.getElementById('crt-toggle').textContent = currentCRT ? 'CRT: OFF' : 'CRT: ON';
+    });
+    
+    // Hide loading screen when game starts
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loading = document.getElementById('loading-screen');
+        if (loading) {
+          loading.style.opacity = '0';
+          loading.style.transition = 'opacity 0.5s';
+          setTimeout(() => loading.style.display = 'none', 500);
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 </html>

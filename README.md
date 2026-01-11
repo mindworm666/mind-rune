@@ -1,164 +1,228 @@
 # Mind Rune 🎮
 
-**A Minimalist Multiplayer Roguelike MMO**
+A real-time multiplayer roguelike adventure game with a retro CRT terminal aesthetic.
 
-Mind Rune is a retro-style, ASCII-based multiplayer roguelike where players explore procedurally generated worlds, encounter other adventurers in real-time, and experience meaningful gameplay without overwhelming complexity.
+![Mind Rune](https://img.shields.io/badge/Status-Playable-green)
+![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## ✨ Features (Iteration Zero)
+## Features ✨
 
-- **🔐 Account System**: Register and login to persist your character
-- **🌍 Procedurally Generated World**: Explore an infinite ASCII wilderness
-- **👥 Real-time Multiplayer**: See other players move in real-time via WebSocket
-- **💬 Global Chat**: Communicate with other adventurers
-- **⌨️ Simple Controls**: Arrow keys or WASD to move
-- **🎨 Retro Aesthetic**: Pure ASCII graphics with terminal-style interface
+- **Real-time Combat** - No turns! All actions have cooldowns
+- **Multiplayer** - See other players in real-time
+- **Procedural World** - Infinite 3D world with dungeons
+- **Heavy CRT Effects** - Scanlines, phosphor glow, chromatic aberration
+- **ASCII Graphics** - Classic roguelike aesthetics
+- **Entity Component System** - Scalable, extensible architecture
 
-## 🛠️ Tech Stack
+## Quick Start 🚀
 
-### Backend
-- **Python 3.12** with FastAPI
-- **WebSockets** for real-time communication
-- **SQLite** for data persistence
-- **JWT** authentication
+### 1. Start the Backend Server
 
-### Frontend
-- **Pure JavaScript** (no framework bloat!)
-- **HTML5 + CSS3** with retro terminal styling
-- **WebSocket API** for real-time updates
-
-## 🚀 Quick Start
-
-### Easy Way (Recommended)
-
-**macOS/Linux:**
 ```bash
-cd mind-rune
-./start.sh
+# From project root
+python3 backend/main.py
+
+# Or use the startup script
+./start_server.sh
 ```
 
-**Windows:**
+The server will start on `ws://localhost:8765`
+
+### 2. Start the Frontend
+
 ```bash
-cd mind-rune
-start.bat
-```
-
-Then open your browser to `http://localhost:8080` and start playing!
-
-### Manual Setup
-
-See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
-
-**Quick version:**
-
-1. **Backend:**
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py
-```
-
-2. **Frontend** (new terminal):
-```bash
+# From project root
 cd frontend
 python3 -m http.server 8080
+
+# Or use the startup script
+./start_frontend.sh
 ```
 
-3. **Play:** Open `http://localhost:8080` in your browser
+Open your browser to `http://localhost:8080`
 
-## 🎮 How to Play
+### 3. Login and Play!
 
-1. **Register/Login**: Create an account or login with existing credentials
-2. **Movement**: Use arrow keys or WASD to explore the world
-3. **Chat**: Press `T` to open chat, type your message, and press Enter
-4. **Explore**: Discover the procedurally generated terrain
-   - `.` = Ground (walkable)
-   - `#` = Wall (blocked)
-   - `~` = Water (blocked)
-   - `^` = Mountain
-   - `t` = Tree
-   - `@` = Player character
+Test accounts:
+- `test` / `test`
+- `player1` / `password1`
+- `player2` / `password2`
 
-## 📁 Project Structure
+Or register a new account!
+
+## Controls 🎮
+
+| Key | Action |
+|-----|--------|
+| `W/↑` | Move North |
+| `A/←` | Move West |
+| `S/↓` | Move South |
+| `D/→` | Move East |
+| `Space` | Interact |
+| `G` | Pick up item |
+| `I` | Toggle inventory |
+| `C` | Character sheet |
+| `M` | Toggle minimap |
+| `T` | Chat |
+| `H` | Help |
+| `<` / `>` | Use stairs |
+| `F3` | Toggle debug info |
+
+## Architecture 📐
 
 ```
 mind-rune/
 ├── backend/
-│   ├── main.py              # FastAPI application & WebSocket server
-│   ├── auth.py              # JWT authentication
-│   ├── database.py          # SQLite database layer
-│   ├── models.py            # Data models
-│   ├── game.py              # Game world & connection manager
-│   └── requirements.txt     # Python dependencies
+│   ├── main.py              # Server entry point
+│   ├── engine/
+│   │   ├── ecs.py           # Entity Component System
+│   │   ├── game_loop.py     # Fixed-timestep game loop (20 TPS)
+│   │   └── spatial.py       # Spatial hash grid
+│   ├── components/
+│   │   └── core.py          # All game components
+│   ├── systems/
+│   │   ├── core_systems.py  # Combat, movement, cooldowns
+│   │   ├── ai_system.py     # NPC decision making
+│   │   ├── inventory_system.py
+│   │   └── visibility_system.py
+│   ├── world/
+│   │   ├── world_3d.py      # Chunk-based 3D world
+│   │   └── starter_world.py # Initial play area
+│   └── server/
+│       ├── websocket.py     # WebSocket implementation
+│       ├── protocol.py      # Message types
+│       └── game_server.py   # Main server
 │
 ├── frontend/
-│   ├── index.html           # Main HTML page
+│   ├── index.html           # Main HTML
 │   ├── css/
-│   │   └── style.css        # Retro terminal styling
+│   │   ├── terminal.css     # Base terminal styles
+│   │   └── crt-effects.css  # CRT shader effects
 │   └── js/
-│       └── game.js          # Game client logic
+│       ├── main.js          # Entry point
+│       ├── game.js          # Main game client
+│       ├── renderer.js      # ASCII rendering
+│       ├── network.js       # WebSocket client
+│       ├── input.js         # Input handling
+│       └── viewport.js      # Camera system
 │
-└── README.md
+└── docs/
+    ├── ARCHITECTURE.md      # System design
+    └── INVARIANTS.md        # Core invariants
 ```
 
-## 🔮 Roadmap
+## Technical Details 🔧
 
-### Iteration Zero ✅ (Current)
-- [x] Basic account creation and authentication
-- [x] Multiplayer connection system
-- [x] Simple world generation
-- [x] Real-time player movement
-- [x] Global chat
+### Backend
+- **Language**: Python 3.8+
+- **Architecture**: Entity Component System (ECS)
+- **Tick Rate**: 20 TPS (50ms per tick)
+- **Protocol**: WebSocket with JSON messages
+- **World**: Chunk-based (16×16×16), procedurally generated
 
-### Future Iterations
-- [ ] **Combat System**: Turn-based or real-time combat
-- [ ] **Inventory & Items**: Collect, use, and trade items
-- [ ] **Character Progression**: Experience, levels, and skills
-- [ ] **Monsters & NPCs**: AI-controlled entities
-- [ ] **Dungeons**: Instanced areas for parties
-- [ ] **Quests**: Dynamic quest generation
-- [ ] **Guilds/Parties**: Team up with other players
-- [ ] **Permadeath Mode**: Hardcore roguelike experience
-- [ ] **Sound Effects**: Retro bleeps and bloops
-- [ ] **Mobile Support**: Touch controls
+### Frontend
+- **Rendering**: Canvas 2D ASCII rendering
+- **Target FPS**: 60
+- **Effects**: CSS-based CRT simulation
+- **Input**: Keyboard + mouse support
 
-## 🎯 Design Philosophy
+### Key Systems
+- **CooldownSystem** - All actions have cooldowns
+- **CombatSystem** - Real-time damage with threat tables
+- **AISystem** - State machine AI (idle, wander, chase, attack, flee)
+- **MovementSystem** - Grid-based movement with collision
+- **InventorySystem** - Items, equipment, loot drops
+- **VisibilitySystem** - Fog of war with shadowcasting
 
-**Minimalist**: Every feature should add meaningful gameplay, not complexity.
+## Gameplay Loop 🔄
 
-**Accessible**: Anyone should be able to jump in and start playing within seconds.
+1. **Login** → Create/select character
+2. **Spawn** → Start in town (safe zone)
+3. **Explore** → Venture into wilderness
+4. **Fight** → Real-time combat with monsters
+5. **Loot** → Collect items and gold
+6. **Level** → Gain XP, improve stats
+7. **Die** → Respawn in town
+8. **Repeat** → Each run gets harder/deeper
 
-**Retro**: ASCII graphics and terminal aesthetics for that authentic roguelike feel.
+## The Starter World 🗺️
 
-**Multiplayer**: The world feels alive because other players are real people.
+```
+100×100 tile area with:
+- Town center (safe zone with NPCs)
+- Wilderness zones (enemies)
+- Dungeon entrance (stairs down)
+- Items scattered around
+```
 
-**Iteration**: Build in small, complete increments. Each iteration should be playable.
+Enemy Types:
+- 🟢 **Goblins** - Weak, drop ears
+- 🔵 **Wolves** - Fast, drop bones  
+- 🟤 **Orcs** - Strong, drop weapons
+- ⚪ **Skeletons** - Medium, drop bones & gear
 
-## 🤝 Contributing
+## Development 🛠️
 
-This is an early-stage project! Contributions, ideas, and feedback are welcome.
+### Run Tests
+```bash
+python3 test_connection.py
+```
 
-## 📝 License
+### Debug Mode
+Press `F3` in-game to show:
+- FPS counter
+- Network latency
+- Entity count
+- Player position
+- Server tick
 
-MIT License - Feel free to use this project as a learning resource or base for your own game!
+### Adding New Features
 
-## 🐛 Known Issues
+**New Component:**
+```python
+# backend/components/core.py
+@dataclass
+class MyComponent:
+    value: int = 0
+```
 
-- Server needs to be restarted to reset the world
-- No player authentication timeout (tokens last 30 days)
-- Chat messages are not persisted
-- No rate limiting on movements
+**New System:**
+```python
+# backend/systems/my_system.py
+class MySystem(System):
+    def _do_update(self, dt: float, world: World):
+        for entity, (my_comp,) in world.query(MyComponent):
+            # Process entities
+            pass
+```
 
-## 💡 Tips for Development
+## Roadmap 🗺️
 
-- The backend uses procedural generation with seeded randomness for consistent terrain
-- WebSocket connections auto-reconnect after 5 seconds if disconnected
-- Press F12 in browser to see console logs for debugging
-- Database file (`mindrune.db`) is created automatically on first run
+- [x] Core ECS engine
+- [x] Real-time combat
+- [x] Multiplayer networking
+- [x] Terminal UI with CRT effects
+- [x] Procedural world generation
+- [x] Basic AI
+- [ ] Database persistence
+- [ ] More dungeon levels
+- [ ] Skills & abilities
+- [ ] Quests
+- [ ] PvP zones
+
+## License 📄
+
+MIT License - See LICENSE file
+
+## Credits 🙏
+
+Inspired by:
+- Dwarf Fortress
+- NetHack
+- Caves of Qud
+- Cataclysm: DDA
 
 ---
 
-**Made with 💚 by mindworm666**
-
-*"In the Mind Rune, every step is an adventure."*
+*"In the depths of the Mind Rune, adventure awaits..."*

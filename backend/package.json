@@ -1,0 +1,6 @@
+{
+  "name": "mind-rune-backend",
+  "version": "0.1.0",
+  "description": "Mind Rune game server",
+  "dependencies": {}
+}
