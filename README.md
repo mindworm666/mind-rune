@@ -28,46 +28,44 @@ Mind Rune is a retro-style, ASCII-based multiplayer roguelike where players expl
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.12+
-- A modern web browser
+### Easy Way (Recommended)
 
-### Backend Setup
-
-1. Navigate to backend directory:
+**macOS/Linux:**
 ```bash
-cd mind-rune/backend
+cd mind-rune
+./start.sh
 ```
 
-2. Create virtual environment:
+**Windows:**
 ```bash
+cd mind-rune
+start.bat
+```
+
+Then open your browser to `http://localhost:8080` and start playing!
+
+### Manual Setup
+
+See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
+
+**Quick version:**
+
+1. **Backend:**
+```bash
+cd backend
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-4. Run the server:
-```bash
 python main.py
 ```
 
-The API server will start on `http://localhost:8000`
-
-### Frontend Setup
-
-1. Open `mind-rune/frontend/index.html` in your browser, or
-
-2. Serve with a simple HTTP server:
+2. **Frontend** (new terminal):
 ```bash
-cd mind-rune/frontend
-python -m http.server 8080
+cd frontend
+python3 -m http.server 8080
 ```
 
-Then navigate to `http://localhost:8080`
+3. **Play:** Open `http://localhost:8080` in your browser
 
 ## 🎮 How to Play
 
