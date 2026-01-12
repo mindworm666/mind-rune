@@ -173,15 +173,19 @@ async def main():
         tps=20
     )
     
-    # Handle shutdown signals
+    # Handle shutdown signals (Unix only - Windows uses KeyboardInterrupt)
     loop = asyncio.get_event_loop()
     
     def signal_handler():
         logger.info("Received shutdown signal")
         asyncio.create_task(server.stop())
     
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, signal_handler)
+    try:
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, signal_handler)
+    except NotImplementedError:
+        # Windows doesn't support add_signal_handler
+        pass
     
     await server.start()
 

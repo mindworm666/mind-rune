@@ -13,12 +13,12 @@
 export class NetworkClient {
   constructor(options = {}) {
     this.options = {
+      ...options,
       url: options.url || this.getDefaultUrl(),
       reconnectDelay: options.reconnectDelay || 1000,
       maxReconnectDelay: options.maxReconnectDelay || 30000,
       reconnectBackoff: options.reconnectBackoff || 1.5,
-      pingInterval: options.pingInterval || 5000,
-      ...options
+      pingInterval: options.pingInterval || 5000
     };
     
     this.ws = null;

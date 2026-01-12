@@ -25,10 +25,10 @@ import {
 export class Game {
   constructor(options = {}) {
     this.options = {
+      ...options,
       targetFPS: options.targetFPS || 60,
       serverUrl: options.serverUrl || 'ws://localhost:8765',
-      canvasId: options.canvasId || 'game-canvas',
-      ...options
+      canvasId: options.canvasId || 'game-canvas'
     };
     
     // Core systems
